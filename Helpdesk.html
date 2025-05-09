@@ -1,0 +1,927 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oracle HR Helpdesk Comprehensive Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hidden { display: none; }
+        .task-link { cursor: pointer; }
+        .task-link:hover { color: #1d4ed8; }
+        .section-header { margin-top: 2rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold text-center mb-6 text-blue-700">Oracle HR Helpdesk Comprehensive Guide</h1>
+        <p class="text-center mb-8 text-gray-600">Click a task, configurable item, glossary term, challenges, or 25B features to view details.</p>
+
+        <!-- Configurable Tasks Section -->
+        <h2 class="text-2xl font-semibold section-header text-blue-600">Configurable Tasks</h2>
+        <ul class="list-disc pl-6 space-y-2">
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task1')">Manage SR Classification Profile Options</span>
+                <div id="task1" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Configures profile options for classifying Service Requests (SRs) into categories like Payroll or Benefits.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Organizes HR SRs for efficient routing and reporting, ensuring queries reach the right HR team.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Navigate to <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Profile Options</strong>.</li>
+                        <li>Enable profile option <strong>ORA_SVC_SR_CLASSIFICATION_ENABLED</strong>.</li>
+                        <li>Define SR category hierarchies (e.g., Payroll, Benefits).</li>
+                        <li>Test in a sandbox.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task2')">Manage Service Request Similarity Profile Options</span>
+                <div id="task2" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Manages profile options for SR similarity using Adaptive Intelligence to suggest resolutions.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Speeds up HR SR resolution by leveraging past solutions.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Go to <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Profile Options</strong>.</li>
+                        <li>Enable <strong>ORA_SVC_SR_SIMILARITY_ENABLED</strong>.</li>
+                        <li>Configure similarity thresholds and fields.</li>
+                        <li>Validate in a sandbox.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task3')">Define Users and Security for Service</span>
+                <div id="task3" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Manages setup users, security profiles, and application users for the Service offering.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Ensures HR agents and employees have appropriate roles for SR management.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Access <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Define Users and Security for Service</strong>.</li>
+                        <li>Assign roles like <strong>Human Resource Analyst</strong>.</li>
+                        <li>Configure <strong>Resource Directory</strong> for agents.</li>
+                        <li>Test role-based access.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task4')">Run User and Roles Synchronization Process</span>
+                <div id="task4" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Batch process to synchronize users and roles.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Keeps HRHD user roles updated.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Schedule in <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Run User and Roles Synchronization Process</strong>.</li>
+                        <li>Set synchronization frequency.</li>
+                        <li>Monitor logs.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task5')">Manage Applications Security Preferences</span>
+                <div id="task5" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Manages security preferences like password policies and notification templates.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Secures HRHD access and customizes SR notifications.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Go to <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Applications Security Preferences</strong>.</li>
+                        <li>Configure password policies.</li>
+                        <li>Customize notification templates.</li>
+                        <li>Test notifications.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task6')">Import Users and Roles into Application Security</span>
+                <div id="task6" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Schedules import of users and roles into Application Security tables.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Enables bulk HRHD user setup.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Schedule via <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Import Users and Roles</strong>.</li>
+                        <li>Prepare import files.</li>
+                        <li>Validate imports.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task7')">Manage Address Validation Profile Options</span>
+                <div id="task7" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Sets parameters to enforce address validation on imports.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Ensures accurate employee address data in SRs.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Access <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Address Validation Profile Options</strong>.</li>
+                        <li>Enable <strong>ORA_HZ_ADDRESS_VALIDATION_ENABLED</strong>.</li>
+                        <li>Configure validation rules.</li>
+                        <li>Test address imports.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task8')">Analyze Delays in Service Request Lifecycle</span>
+                <div id="task8" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Analyzes SR lifecycle delays using OTBI reports.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Identifies bottlenecks in HR SR resolution.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Enable in <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Analytics</strong>.</li>
+                        <li>Customize OTBI reports.</li>
+                        <li>Configure infolets.</li>
+                        <li>Test reports.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task9')">Create and Update Internal Service Requests and HR Service Requests via Intelligent Advisor</span>
+                <div id="task9" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Configures Intelligent Advisor interviews for HR SRs.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Provides guided SR submission workflows.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Access <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Intelligent Advisor</strong>.</li>
+                        <li>Customize interview templates.</li>
+                        <li>Map SR fields.</li>
+                        <li>Test interviews.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task10')">Milestone Configuration</span>
+                <div id="task10" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Defines checkpoints (e.g., Initial Response) in SR workflows.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Ensures timely SR resolution with SLA tracking.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Go to <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Service Level Agreements</strong>.</li>
+                        <li>Define milestones.</li>
+                        <li>Link to SLA policies.</li>
+                        <li>Test SLA alerts.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task11')">Service Request Page Layout Configuration</span>
+                <div id="task11" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Customizes SR form layouts using Application Composer.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Tailors SR interfaces for HR needs.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Access <strong>Application Composer</strong> > <strong>Service Request</strong>.</li>
+                        <li>Modify layouts.</li>
+                        <li>Configure field properties.</li>
+                        <li>Test layouts.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task12')">Queue Configuration</span>
+                <div id="task12" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Sets up queues for SR assignment to HR teams.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Routes SRs to appropriate specialists.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Navigate to <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Queues</strong>.</li>
+                        <li>Define queues.</li>
+                        <li>Assign agents.</li>
+                        <li>Test routing.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task13')">Analyze Service Request Transfers</span>
+                <div id="task13" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Analyzes SR transfers between agents/queues.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Reduces unnecessary SR hand-offs.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Enable in <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Analytics</strong>.</li>
+                        <li>Configure analytics for transfer patterns.</li>
+                        <li>Test reports.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task14')">Analyze Service Request Relationships</span>
+                <div id="task14" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Analyzes SR-case dependencies using OTBI.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Improves resolution of complex HR issues.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Enable in <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Analytics</strong>.</li>
+                        <li>Set up relationship tracking.</li>
+                        <li>Customize analytics.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task15')">Intelligent Advisor Interview Attachments on Custom Objects</span>
+                <div id="task15" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Extends attachment support to custom objects in Intelligent Advisor interviews.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Enables document uploads for HR SRs.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Enable in <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Intelligent Advisor</strong>.</li>
+                        <li>Configure custom object mappings.</li>
+                        <li>Set file restrictions.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task16')">Intelligent Advisor Connector Performance Enhancement for Service Request and Activity</span>
+                <div id="task16" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Improves Intelligent Advisor connector performance for SRs.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Ensures faster SR processing.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Enable in <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Intelligent Advisor</strong>.</li>
+                        <li>Configure SR mappings.</li>
+                        <li>Test performance.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task17')">Grievance Interview Template for HR Help Desk</span>
+                <div id="task17" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Provides a template for authoring grievance-related interviews.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Supports handling sensitive HR SRs.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Customize template in <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Intelligent Advisor</strong>.</li>
+                        <li>Map to SR fields.</li>
+                        <li>Test interviews.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task18')">Object Link Usage in Service and Help Desk Requests</span>
+                <div id="task18" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Tracks SR origination from other objects (e.g., expense reports).</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Improves process transparency.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Configure in <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Object Links</strong>.</li>
+                        <li>Enable analytics.</li>
+                        <li>Test tracking.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task19')">SmartText Usage in Service and Help Desk Requests</span>
+                <div id="task19" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Tracks SmartText usage trends in SRs.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Optimizes agent response efficiency.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Enable in <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Analytics</strong>.</li>
+                        <li>Configure usage analytics.</li>
+                        <li>Test reports.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task20')">Analyze Internal Conversations in Service Requests</span>
+                <div id="task20" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Analyzes internal SR conversations.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Improves agent-employee interaction insights.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Enable in <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Analytics</strong>.</li>
+                        <li>Configure conversation metrics.</li>
+                        <li>Test analytics.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task21')">Restrict Changes to Attachments on Read-Only Service Requests</span>
+                <div id="task21" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Prevents read-only users from modifying SR attachments.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Enhances data security for HR SRs.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Enable in <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Security</strong>.</li>
+                        <li>Configure access controls.</li>
+                        <li>Test restrictions.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task22')">Allow Manual Submission of BI Scheduled Processes</span>
+                <div id="task22" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Enables manual submission of BI processes like SR Aggregate.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Provides flexibility in SR analytics.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Enable in <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage BI Processes</strong>.</li>
+                        <li>Configure schedules.</li>
+                        <li>Test manual submission.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task23')">New Processes to Pause and Resume Auto-Scheduled Service/Help Desk OTBI Jobs</span>
+                <div id="task23" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Adds jobs to pause/resume OTBI jobs for HRHD analytics.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Controls analytics processing.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Configure in <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage BI Processes</strong>.</li>
+                        <li>Set pause/resume schedules.</li>
+                        <li>Test jobs.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task24')">Additional View Objects for Service and Help Desk Data Extraction</span>
+                <div id="task24" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Provides view objects for extracting HRHD data.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Supports custom reporting.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Enable in <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Data Extraction</strong>.</li>
+                        <li>Configure view object mappings.</li>
+                        <li>Test extraction.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task25')">Report on SR Product/Category Changes as Part of Lifecycle Analysis</span>
+                <div id="task25" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Reports on SR product/category change history.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Tracks SR categorization changes.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Enable in <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Analytics</strong>.</li>
+                        <li>Configure lifecycle analytics.</li>
+                        <li>Test reports.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task26')">Business Rule Creation</span>
+                <div id="task26" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Defines rules to automate SR routing and status updates.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Streamlines SR workflows.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Access <strong>Application Composer</strong> > <strong>Business Rules</strong>.</li>
+                        <li>Create rules for SR assignment.</li>
+                        <li>Test in a sandbox.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task27')">SLA Policy Configuration</span>
+                <div id="task27" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Sets resolution timeframes and escalation triggers.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Ensures timely SR resolution.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Go to <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Service Level Agreements</strong>.</li>
+                        <li>Define SLA policies.</li>
+                        <li>Test escalations.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task28')">Workflow Approval Setup</span>
+                <div id="task28" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Configures approval processes for SRs.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Manages multi-step SR approvals.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Access <strong>BPM Worklist</strong> > <strong>Approval Rules</strong>.</li>
+                        <li>Define approval workflows.</li>
+                        <li>Test approvals.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task29')">Role and Permission Provisioning</span>
+                <div id="task29" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Assigns standard roles and privileges.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Controls HRHD access.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Access <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Roles</strong>.</li>
+                        <li>Assign roles like <strong>HR Help Desk Service Request Creation</strong>.</li>
+                        <li>Test permissions.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task30')">Custom Role Creation</span>
+                <div id="task30" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Creates custom roles by copying delivered roles.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Tailors access for HRHD users.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Access <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Roles</strong>.</li>
+                        <li>Copy <strong>Employee</strong> role and add duties.</li>
+                        <li>Test custom roles.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task31')">Resource Directory Setup</span>
+                <div id="task31" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Configures HR agents as Resources.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Enables SR assignment.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Access <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Resource Directory</strong>.</li>
+                        <li>Add agents as Resources.</li>
+                        <li>Test assignments.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task32')">Resource Organization Configuration</span>
+                <div id="task32" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Sets up organizational units for Resources.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Groups agents for SR management.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Configure in <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Resource Directory</strong>.</li>
+                        <li>Define organizations.</li>
+                        <li>Test groupings.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task33')">Resource Role Assignment</span>
+                <div id="task33" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Assigns roles to Resources.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Defines agent responsibilities.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Assign in <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Resource Directory</strong>.</li>
+                        <li>Link roles to Resources.</li>
+                        <li>Test assignments.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task34')">Knowledge Base Article Management</span>
+                <div id="task34" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Creates and categorizes Knowledge Base articles.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Supports self-service for employees.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Access <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Knowledge Base</strong>.</li>
+                        <li>Create FAQs.</li>
+                        <li>Test search functionality.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task35')">Digital Assistant Response Configuration</span>
+                <div id="task35" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Customizes AI-driven Digital Assistant responses.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Automates routine HR queries.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Configure in <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Digital Assistant</strong>.</li>
+                        <li>Define intents.</li>
+                        <li>Test responses.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task36')">Multi-Channel Support Configuration</span>
+                <div id="task36" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Sets up communication channels for SR submission.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Enables SRs via email, chat, etc.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Enable in <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Channels</strong>.</li>
+                        <li>Configure channels (e.g., Slack).</li>
+                        <li>Test submissions.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task37')">Analytics and Reporting Dashboard Setup</span>
+                <div id="task37" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Configures custom SR analytics dashboards.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Tracks SR performance metrics.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Enable in <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Analytics</strong>.</li>
+                        <li>Create dashboards.</li>
+                        <li>Test reports.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task38')">Audit Trail Configuration</span>
+                <div id="task38" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Sets up logging for SR data changes.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Ensures compliance.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Enable in <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Audit</strong>.</li>
+                        <li>Configure logging.</li>
+                        <li>Test logs.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task39')">Data Security Policy Configuration</span>
+                <div id="task39" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Defines role-based access controls for SR data.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Secures sensitive HR data.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Configure in <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Security</strong>.</li>
+                        <li>Define policies.</li>
+                        <li>Test access.</li>
+                    </ul>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('task40')">Notification Template Customization</span>
+                <div id="task40" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Customizes SR notification templates.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Enhances SR communication.</p>
+                    <p><strong>Configuration Steps:</strong></p>
+                    <ul class="list-disc pl-6">
+                        <li>Access <strong>Setup and Maintenance</strong> > <strong>Service</strong> > <strong>Manage Notifications</strong>.</li>
+                        <li>Edit templates.</li>
+                        <li>Test notifications.</li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+
+        <!-- Configurable Items Section -->
+        <h2 class="text-2xl font-semibold section-header text-blue-600">Configurable Items</h2>
+        <ul class="list-disc pl-6 space-y-2">
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item1')">Service Request Page Layout</span>
+                <div id="item1" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Customizable interface for SR creation and viewing.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Tailors SR forms for HR-specific needs.</p>
+                    <p><strong>Configuration:</strong> Use <strong>Application Composer</strong> to modify layouts.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item2')">Service Request Fields</span>
+                <div id="item2" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Fields like title, severity, or custom fields on SR forms.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Adds HR-specific fields for data capture.</p>
+                    <p><strong>Configuration:</strong> Modify in <strong>Application Composer</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item3')">Service Request Categories</span>
+                <div id="item3" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Categories for classifying SRs (e.g., Payroll).</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Organizes SRs for routing.</p>
+                    <p><strong>Configuration:</strong> Define in <strong>Setup and Maintenance</strong> > <strong>Service</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item4')">Queues</span>
+                <div id="item4" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Queues for assigning SRs to HR teams.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Ensures accurate SR routing.</p>
+                    <p><strong>Configuration:</strong> Set up in <strong>Setup and Maintenance</strong> > <strong>Manage Queues</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item5')">Business Rules</span>
+                <div id="item5" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Rules to automate SR processes.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Streamlines SR workflows.</p>
+                    <p><strong>Configuration:</strong> Define in <strong>Application Composer</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item6')">SLA Policies</span>
+                <div id="item6" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Policies for SR resolution timeframes.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Ensures timely resolution.</p>
+                    <p><strong>Configuration:</strong> Set in <strong>Setup and Maintenance</strong> > <strong>Service Level Agreements</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item7')">Workflow Approvals</span>
+                <div id="item7" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Approval processes for SRs.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Manages multi-step approvals.</p>
+                    <p><strong>Configuration:</strong> Configure in <strong>BPM Worklist</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item8')">Roles and Permissions</span>
+                <div id="item8" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Standard roles for HRHD access.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Controls user access.</p>
+                    <p><strong>Configuration:</strong> Assign in <strong>Setup and Maintenance</strong> > <strong>Manage Roles</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item9')">Custom Roles</span>
+                <div id="item9" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Custom roles for specific HRHD needs.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Tailors access control.</p>
+                    <p><strong>Configuration:</strong> Create in <strong>Setup and Maintenance</strong> > <strong>Manage Roles</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item10')">Resource Directory</span>
+                <div id="item10" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Directory of HR agents as Resources.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Enables SR assignment.</p>
+                    <p><strong>Configuration:</strong> Set up in <strong>Setup and Maintenance</strong> > <strong>Resource Directory</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item11')">Resource Organization</span>
+                <div id="item11" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Organizational units for Resources.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Groups agents for SR management.</p>
+                    <p><strong>Configuration:</strong> Configure in <strong>Setup and Maintenance</strong> > <strong>Resource Directory</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item12')">Resource Role</span>
+                <div id="item12" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Roles assigned to Resources.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Defines agent responsibilities.</p>
+                    <p><strong>Configuration:</strong> Assign in <strong>Setup and Maintenance</strong> > <strong>Resource Directory</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item13')">Knowledge Base Articles</span>
+                <div id="item13" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> FAQs and guides for self-service.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Reduces HR agent workload.</p>
+                    <p><strong>Configuration:</strong> Manage in <strong>Setup and Maintenance</strong> > <strong>Manage Knowledge Base</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item14')">Digital Assistant Responses</span>
+                <div id="item14" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> AI-driven responses for HR queries.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Automates routine SRs.</p>
+                    <p><strong>Configuration:</strong> Configure in <strong>Setup and Maintenance</strong> > <strong>Manage Digital Assistant</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item15')">Multi-Channel Support Settings</span>
+                <div id="item15" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Channels for SR submission (e.g., chat).</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Enhances SR accessibility.</p>
+                    <p><strong>Configuration:</strong> Enable in <strong>Setup and Maintenance</strong> > <strong>Manage Channels</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item16')">Analytics and Reporting Dashboards</span>
+                <div id="item16" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Custom dashboards for SR metrics.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Tracks HRHD performance.</p>
+                    <p><strong>Configuration:</strong> Set up in <strong>Setup and Maintenance</strong> > <strong>Manage Analytics</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item17')">Audit Trail Settings</span>
+                <div id="item17" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Logging for SR data changes.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Ensures compliance.</p>
+                    <p><strong>Configuration:</strong> Enable in <strong>Setup and Maintenance</strong> > <strong>Manage Audit</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item18')">Data Security Policies</span>
+                <div id="item18" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Role-based access controls for SR data.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Secures sensitive data.</p>
+                    <p><strong>Configuration:</strong> Define in <strong>Setup and Maintenance</strong> > <strong>Manage Security</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item19')">Notification Templates</span>
+                <div id="item19" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Templates for SR notifications.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Enhances communication.</p>
+                    <p><strong>Configuration:</strong> Customize in <strong>Setup and Maintenance</strong> > <strong>Manage Notifications</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item20')">Escalation Rules</span>
+                <div id="item20" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Rules for escalating SRs.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Manages urgent SRs.</p>
+                    <p><strong>Configuration:</strong> Define in <strong>Setup and Maintenance</strong> > <strong>Manage Escalations</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item21')">SR Status Values</span>
+                <div id="item21" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Status options for SRs (e.g., Open).</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Tracks SR progress.</p>
+                    <p><strong>Configuration:</strong> Customize in <strong>Application Composer</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item22')">SR Priority Levels</span>
+                <div id="item22" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Priority settings for SRs.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Prioritizes urgent SRs.</p>
+                    <p><strong>Configuration:</strong> Define in <strong>Application Composer</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item23')">Dynamic Choice Lists</span>
+                <div id="item23" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Dropdown menus for SR fields.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Ensures data consistency.</p>
+                    <p><strong>Configuration:</strong> Set up in <strong>Application Composer</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item24')">Integration Mappings</span>
+                <div id="item24" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Data mappings for HCM integrations.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Enables data access for SRs.</p>
+                    <p><strong>Configuration:</strong> Configure in <strong>Setup and Maintenance</strong> > <strong>Manage Integrations</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item25')">Search Filters</span>
+                <div id="item25" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Filters for Knowledge Base/SR searches.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Improves usability.</p>
+                    <p><strong>Configuration:</strong> Customize in <strong>Setup and Maintenance</strong> > <strong>Manage Search</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item26')">UI Text and Labels</span>
+                <div id="item26" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Custom text for HRHD interface.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Enhances user experience.</p>
+                    <p><strong>Configuration:</strong> Modify in <strong>Application Composer</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item27')">Mobile Interface Settings</span>
+                <div id="item27" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Mobile-responsive SR layouts.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Enables mobile SR access.</p>
+                    <p><strong>Configuration:</strong> Configure in <strong>Application Composer</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item28')">Feedback Surveys</span>
+                <div id="item28" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Surveys for SR feedback.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Gathers employee feedback.</p>
+                    <p><strong>Configuration:</strong> Set up in <strong>Setup and Maintenance</strong> > <strong>Manage Surveys</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item29')">Language and Localization Settings</span>
+                <div id="item29" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Multi-language support for HRHD.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Supports diverse workforces.</p>
+                    <p><strong>Configuration:</strong> Configure in <strong>Setup and Maintenance</strong> > <strong>Manage Languages</strong>.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('item30')">Attachment Settings</span>
+                <div id="item30" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Rules for SR attachments.</p>
+                    <p><strong>Relevance to HRHD/SR:</strong> Manages document uploads.</p>
+                    <p><strong>Configuration:</strong> Set in <strong>Setup and Maintenance</strong> > <strong>Manage Attachments</strong>.</p>
+                </div>
+            </li>
+        </ul>
+
+        <!-- Glossary Section -->
+        <h2 class="text-2xl font-semibold section-header text-blue-600">Glossary</h2>
+        <ul class="list-disc pl-6 space-y-2">
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('glossary1')">Service Request (SR)</span>
+                <div id="glossary1" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> A formal request submitted by an employee or HR user to address an HR-related query or issue, such as payroll inquiries.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('glossary2')">HR Helpdesk (HRHD)</span>
+                <div id="glossary2" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> A centralized platform for managing employee queries and SRs, automating workflows.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('glossary3')">Case Management</span>
+                <div id="glossary3" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> The process of organizing, tracking, and resolving employee queries within HRHD.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('glossary4')">Self-Service Portal</span>
+                <div id="glossary4" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> A user-friendly interface for employees to submit SRs and access resources.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('glossary5')">Knowledge Base</span>
+                <div id="glossary5" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> A repository of articles and FAQs for self-service.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('glossary6')">Multi-Channel Support</span>
+                <div id="glossary6" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Handling SRs via various channels (e.g., email, chat).</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('glossary7')">Chatbot Integration</span>
+                <div id="glossary7" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> AI-powered feature for real-time SR responses.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('glossary8')">Role-Based Access Controls</span>
+                <div id="glossary8" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Security settings restricting data access by role.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('glossary9')">Data Encryption</span>
+                <div id="glossary9" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Security measure to protect employee data.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('glossary10')">Audit Trails</span>
+                <div id="glossary10" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Logs of access and changes to SR data.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('glossary11')">Workflow Automation</span>
+                <div id="glossary11" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Automated rules for SR processes.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('glossary12')">Analytics and Reporting</span>
+                <div id="glossary12" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Tools to track SR performance metrics.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('glossary13')">Personalized Support</span>
+                <div id="glossary13" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Tailored responses based on employee needs.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('glossary14')">Digital Assistant</span>
+                <div id="glossary14" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> AI bot for SR assistance.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('glossary15')">Journeys</span>
+                <div id="glossary15" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Guided workflows for HR processes.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('glossary16')">HCM Analytics</span>
+                <div id="glossary16" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Analytics for workforce insights.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('glossary17')">Compliance Management</span>
+                <div id="glossary17" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Features to ensure regulatory compliance.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('glossary18')">Issue Resolution Transparency</span>
+                <div id="glossary18" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Real-time SR status updates.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('glossary19')">Queue</span>
+                <div id="glossary19" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> A system for assigning SRs to HR teams.</p>
+                </div>
+            </li>
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('glossary20')">Milestone</span>
+                <div id="glossary20" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>Definition:</strong> Checkpoints in SR workflows (e.g., Initial Response).</p>
+                </div>
+            </li>
+        </ul>
+
+        <!-- Challenges Section -->
+        <h2 class="text-2xl font-semibold section-header text-blue-600">Challenges</h2>
+        <ul class="list-disc pl-6 space-y-2">
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('challenges')">Implementation Challenges</span>
+                <div id="challenges" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>1. User Adoption of Self-Service Portal:</strong></p>
+                    <p><strong>Description:</strong> Employees resist using the HRHD portal due to unfamiliarity.</p>
+                    <p><strong>Impact:</strong> Increases HR agent workload.</p>
+                    <p><strong>Solution:</strong> Configure guided Intelligent Advisor interviews and conduct training, increasing adoption by 40%.</p>
+                    <p><strong>2. Data Integration with HCM Modules:</strong></p>
+                    <p><strong>Description:</strong> Limited data from Core HR/Payroll hinders SR resolution.</p>
+                    <p><strong>Impact:</strong> Slows resolution times.</p>
+                    <p><strong>Solution:</strong> Enhance integrations via <strong>Setup and Maintenance</strong> > <strong>Manage Integrations</strong>.</p>
+                    <p><strong>3. Complex Customization Requirements:</strong></p>
+                    <p><strong>Description:</strong> Diverse needs (e.g., multi-language support) require extensive configuration.</p>
+                    <p><strong>Impact:</strong> Increases implementation time.</p>
+                    <p><strong>Solution:</strong> Use <strong>Application Composer</strong> and translate Knowledge Base articles.</p>
+                </div>
+            </li>
+        </ul>
+
+        <!-- 25B Features Section -->
+        <h2 class="text-2xl font-semibold section-header text-blue-600">What's New in 25B</h2>
+        <ul class="list-disc pl-6 space-y-2">
+            <li><span class="task-link text-blue-600 font-semibold" onclick="toggleDetails('25b')">New Features in 25B Release</span>
+                <div id="25b" class="hidden mt-2 p-4 bg-white rounded-lg shadow-md">
+                    <p><strong>1. Smart Text Mandatory User Variables:</strong></p>
+                    <p><strong>Description:</strong> Ensures mandatory variable checks in Redwood pages for SmartText, improving response consistency. <a href="https://docs.oracle.com/en/cloud/saas/readiness/service/25b/shde-25b/25B-helpdesk-wn-f37119.htm" target="_blank">Source</a></p>
+                    <p><strong>Impact:</strong> Enhances agent efficiency.</p>
+                    <p><strong>2. Action Plan Redwood Experience:</strong></p>
+                    <p><strong>Description:</strong> Native Redwood UI for action plan management, improving usability. <a href="https://docs.oracle.com/en/cloud/saas/readiness/service/25b/shde-25b/25B-helpdesk-wn-f37119.htm" target="_blank">Source</a></p>
+                    <p><strong>Impact:</strong> Streamlines agent workflows.</p>
+                    <p><strong>3. Default Value for Primary Contact and Assignee:</strong></p>
+                    <p><strong>Description:</strong> Sets default values for SR fields, reducing manual entry. <a href="https://docs.oracle.com/en/cloud/saas/readiness/service/25b/shde-25b/25B-helpdesk-wn-f37119.htm" target="_blank">Source</a></p>
+                    <p><strong>Impact:</strong> Speeds up SR creation.</p>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        let openTask = null;
+
+        function toggleDetails(taskId) {
+            const element = document.getElementById(taskId);
+            if (openTask && openTask !== element) {
+                openTask.classList.add('hidden');
+            }
+            element.classList.toggle('hidden');
+            openTask = element.classList.contains('hidden') ? null : element;
+        }
+    </script>
+</body>
+</html>
